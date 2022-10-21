@@ -7,18 +7,72 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
     <title>Weather API Fun !!!</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 
 <body>
 
     <h1> WEATHER API FUN !!!</h1>
+    <p>SEARCH THE WEATHER OF ANYWHERE AROUND THE WORLD!!!</p>
+    <p>Simply enter latitude & longitude and press sumbit in the form below
+        to see the weather of the location searched</p>
+
+    <form id="weather">
+
+        <label for="latitude">Enter latitude</label>
+        <input class="latitude" type="number" min="-100" max="100" required placeholder="EX 41.40338">
+
+        <label for="longitude">Enter longitude</label>
+        <input class="longitude" type="number" min="-150" max="150" required placeholder="EX 20.17403">
+        <select>... imperial, default, metric</select>
+
+        <button id="search">Search</button>
+
+    </form>
+
+    <div id="content">
+        <ul id="content-list"></ul>
+    </div>
+
+    <script>
+        const APIKEY = '980fa9c5c24cfaa8b3834170a7f08226'
+        const form = document.querySelector('#weather')
+        const lat = document.querySelector('.latitude')
+        const lon = document.querySelector('.longitude')
+        const url = 'https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={API key}'
 
 
 
+        const buildUrlForWeatherGetCall = (lat, lon) => {
+            return `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${APIKEY}&units=metric`;
+        }
+
+        form.addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const weatherGetDataUrl = buildUrlForWeatherGetCall(lat.value, lon.value);
+            const res = await axios.get(weatherGetDataUrl);
+            console.log(res.data);
+            const data = res.data;
+            const contentList = document.getElementById('content-list');
+            contentList.innerHTML = ''; //this resets the values
+            console.log(data.weather[0]);
+            const cityListItem = document.createElement('li');
+            cityListItem.innerHTML = `City: ${data.name}, ${data.sys.country}`;
+            const tempearatureListItem = document.createElement('li');
+            tempearatureListItem.innerHTML = `Temperature: ${data.main.temp} degrees Celcuis`;
+            const weatherDescriptionListItem = document.createElement('li');
+            weatherDescriptionListItem.innerHTML = `Description: ${data.weather[0].description}`;
+            contentList.appendChild(cityListItem);
+            contentList.appendChild(tempearatureListItem);
+            contentList.appendChild(weatherDescriptionListItem);
 
 
+        });
 
-    <script src="app.js"></script>
+
+    </script>
+
+
 </body>
 
 </html>
